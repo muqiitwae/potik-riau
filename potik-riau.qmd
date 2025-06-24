@@ -1,0 +1,209 @@
+---
+title: "Pembinaan Agen Statistik"
+author: "Andriansyah Muqiit Wardoyo Saputra"
+date: "24 Juni 2025"
+format: 
+  html:
+    toc: true
+    toc_float: true
+    number-sections: true
+    tbl-cap-location: top
+    theme: cosmo
+    df-print: paged
+---
+
+# Pendahuluan
+
+Topik yang kita angkat pada tutor kali ini adalah Pengaruh *Work Life Balance*, *Employee Engagement*, *Competency*, dan *Job Characteristic* terhadap *Turnover Intention* pada Karyawan Generasi Milenial Perusahaan XYZ. Rincian variabel konstruk dapat dilihat pada tabel berikut.
+
+```{r}
+#| include: false
+library(knitr)
+```
+
+```{r tab-konstruk}
+#| label: tab-konstruk
+#| echo: false
+#| tbl-cap: "Rincian variabel konstruk dan item pertanyaan."
+
+konstruk_var <- read.csv(file = "konstruk-var.csv")
+kable(konstruk_var, align = "l")
+
+```
+
+# Pengenalan Package SEMinR
+
+## Install package
+
+Package yang akan digunakan dalam tutor kali ini adalah SEMinR, jalankan kode `install.packages("seminr")` pada console untuk memasangnya pada Rstudio.
+
+```{r}
+#| label: load-packages
+#| include: true
+#| warning: false
+
+# Load package
+library(seminr)
+```
+
+## Load data
+
+Pertama kali, load dataset yang akan kita gunakan untuk memodelkan SEM-PLS menggunakan fungsi `read.csv( ... )`. [📥 Unduh Dataset dataset.csv](dataset.csv)
+
+```{r}
+#| echo: true
+data <- read.csv("dataset.csv", header = TRUE, sep = ',')
+data <- data[,-1] # menghapus kolom ID
+```
+
+Dataset ini terdiri dari **`r nrow(data)` observasi** dan **`r ncol(data)` variabel**.
+
+```{r}
+head(data)
+```
+
+::: callout-warning
+## DISCLAIMER - Data ini merupakan Data Dummy yang di-generate menggunakan bantuan ChatGPT dan hanya bertujuan untuk kepentingan tutorial.
+:::
+
+# Membangun model struktural
+
+## Mendefinisikan konstruk
+
+```{r}
+# Definisikan konstruk (measurement model)
+mm <- constructs(
+  composite("WLB",  multi_items("WLB", 1:6)),
+  composite("EE",   multi_items("EE", 1:6)),
+  composite("COMP", multi_items("COMP", 1:6)),
+  composite("JC",   multi_items("JC", 1:6)),
+  composite("TI",   multi_items("TI", 1:6))
+)
+```
+
+```{r}
+# Definisikan hubungan antar konstruk (structural model)
+sm <- relationships(
+  paths(from = c("WLB", "EE", "COMP", "JC"), to = "TI")
+)
+```
+
+## Estimasi model
+
+```{r}
+# Estimasi model dengan metode Partial Least Square (PLS)
+pls_model <- estimate_pls(data = data, 
+                          measurement_model = mm, 
+                          structural_model = sm,
+                          inner_weights = path_weighting)
+```
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+#| error: false
+
+p <- plot(pls_model)
+p
+```
+
+```{r}
+#| label: fig-plot
+#| echo: false
+#| include: true
+#| fig-cap: "Grafik hasil pemodelan"
+save_plot("model-pls.png", plot = p)
+# Tampilkan gambar
+knitr::include_graphics("model-pls.png")
+```
+
+## Hasil estimasi
+
+```{r}
+summary_pls_model <- summary(pls_model)
+```
+
+```{r}
+# Koefisien jalur dan signifikansi
+summary_pls_model$paths
+```
+
+```{r}
+# Reliabilitas
+summary_pls_model$reliability
+```
+
+```{r}
+# Validitas
+#summary_pls_model$validity
+```
+
+## Evaluasi model
+
+```{r}
+boot_pls_model <- bootstrap_model(seminr_model = pls_model,
+  nboot = 1000,
+  cores = NULL,
+  seed = 123)
+```
+
+```{r}
+sum_boot_pls_model <- summary(boot_pls_model)
+```
+
+# Membangun model dengan variabel moderasi
+
+## Mendefinisikan konstruk
+
+```{r}
+# Definisikan konstruk (measurement model)
+mm2 <- constructs(
+  composite("WLB",  multi_items("WLB", 1:6)),
+  composite("EE",   multi_items("EE", 1:6)),
+  composite("COMP", multi_items("COMP", 1:6)),
+  composite("JC",   multi_items("JC", 1:6)),
+  composite("TI",   multi_items("TI", 1:6)),
+  interaction_term(iv = "WLB", moderator = "JC", method = two_stage),
+  interaction_term(iv = "EE",  moderator = "JC", method = two_stage),
+  interaction_term(iv = "COMP", moderator = "JC", method = two_stage)
+)
+```
+
+```{r}
+# Definisikan hubungan antar konstruk (structural model) dengan variabel moderasi
+sm2 <- relationships(
+  paths(from = c("WLB", "EE", "COMP", "JC"), to = "TI"),  
+  paths(from = c("WLB*JC", "EE*JC", "COMP*JC"), to = "TI")
+)
+```
+
+## Estimasi model interaksi
+
+```{r}
+# Estimasi model dengan metode Partial Least Square (PLS)
+pls_model2 <- estimate_pls(data = data, 
+                          measurement_model = mm2, 
+                          structural_model = sm2,
+                          inner_weights = path_weighting)
+# Plot diagramnya
+plot(pls_model2, "Hasil Pemodelan")
+```
+
+```{r}
+summary_pls_model2 <- summary(pls_model2)
+```
+
+## Hasil estimasi
+
+```{r}
+# Koefisien jalur dan signifikansi
+summary_pls_model2$paths
+```
+
+```{r}
+# Reliabilitas 
+summary_pls_model2$reliability
+```
+
+## Evaluasi model
