@@ -99,23 +99,14 @@ pls_model <- estimate_pls(data = data,
 ```
 
 ```{r}
+#| label: fig-plot
+#| fig-cap: "Grafik hasil pemodelan"
 #| echo: true
 #| message: false
 #| warning: false
 #| error: false
 
-p <- plot(pls_model)
-p
-```
-
-```{r}
-#| label: fig-plot
-#| echo: false
-#| include: true
-#| fig-cap: "Grafik hasil pemodelan"
-save_plot("model-pls.png", plot = p)
-# Tampilkan gambar
-knitr::include_graphics("model-pls.png")
+plot(pls_model)
 ```
 
 ## Hasil estimasi

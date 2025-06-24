@@ -32,7 +32,7 @@
     "href": "index.html#estimasi-model",
     "title": "Pembinaan Agen Statistik",
     "section": "3.2 Estimasi model",
-    "text": "3.2 Estimasi model\n\n# Estimasi model dengan metode Partial Least Square (PLS)\npls_model &lt;- estimate_pls(data = data, \n                          measurement_model = mm, \n                          structural_model = sm,\n                          inner_weights = path_weighting)\n\nGenerating the seminr model\n\n\nAll 250 observations are valid.\n\n\n\np &lt;- plot(pls_model)\np\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 1: Grafik hasil pemodelan"
+    "text": "3.2 Estimasi model\n\n# Estimasi model dengan metode Partial Least Square (PLS)\npls_model &lt;- estimate_pls(data = data, \n                          measurement_model = mm, \n                          structural_model = sm,\n                          inner_weights = path_weighting)\n\nGenerating the seminr model\n\n\nAll 250 observations are valid.\n\n\n\nplot(pls_model)\n\n\n\n\n\n\n\nFigure 1: Grafik hasil pemodelan"
   },
   {
     "objectID": "index.html#hasil-estimasi",
