@@ -1,0 +1,79 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Pembinaan Agen Statistik",
+    "section": "",
+    "text": "Topik yang kita angkat pada tutor kali ini adalah Pengaruh Work Life Balance, Employee Engagement, Competency, dan Job Characteristic terhadap Turnover Intention pada Karyawan Generasi Milenial Perusahaan XYZ. Rincian variabel konstruk dapat dilihat pada tabel berikut.\n\n\n\nRincian variabel konstruk dan item pertanyaan.\n\n\n\n\n\n\n\nKonstruk\nNama.variabel.\nPertanyaan\n\n\n\n\nWork-life Balance (WLB)\nWLB1\nSaya dapat menyeimbangkan tuntutan pekerjaan dan kehidupan pribadi saya.\n\n\nWork-life Balance (WLB)\nWLB2\nSaya jarang membawa pekerjaan ke rumah.\n\n\nWork-life Balance (WLB)\nWLB3\nWaktu saya untuk keluarga tidak terganggu oleh pekerjaan.\n\n\nWork-life Balance (WLB)\nWLB4\nSaya merasa puas dengan keseimbangan antara pekerjaan dan kehidupan pribadi saya.\n\n\nWork-life Balance (WLB)\nWLB5\nSaya memiliki cukup waktu untuk aktivitas di luar pekerjaan.\n\n\nWork-life Balance (WLB)\nWLB6\nStres pekerjaan tidak memengaruhi hubungan saya dengan keluarga.\n\n\nEmployee Engagement (EE)\nEE1\nSaya merasa bersemangat saat bekerja.\n\n\nEmployee Engagement (EE)\nEE2\nSaya tenggelam dalam pekerjaan saya.\n\n\nEmployee Engagement (EE)\nEE3\nSaya merasa pekerjaan saya bermakna.\n\n\nEmployee Engagement (EE)\nEE4\nSaya bangga dengan pekerjaan saya.\n\n\nEmployee Engagement (EE)\nEE5\nSaya merasa termotivasi setiap hari kerja.\n\n\nEmployee Engagement (EE)\nEE6\nSaya ingin berkontribusi lebih banyak dalam organisasi.\n\n\nCompetency (COMP)\nCOMP1\nSaya memiliki kemampuan teknis yang diperlukan untuk pekerjaan saya.\n\n\nCompetency (COMP)\nCOMP2\nSaya terus mengembangkan keterampilan saya.\n\n\nCompetency (COMP)\nCOMP3\nSaya dapat bekerja secara efektif dalam tim.\n\n\nCompetency (COMP)\nCOMP4\nSaya memiliki pengetahuan yang cukup untuk melaksanakan tugas.\n\n\nCompetency (COMP)\nCOMP5\nSaya mampu mengambil keputusan dalam situasi sulit.\n\n\nCompetency (COMP)\nCOMP6\nSaya dapat menyesuaikan diri dengan perubahan di tempat kerja.\n\n\nJob Characteristic (JC)\nJC1\nPekerjaan saya memerlukan berbagai keterampilan.\n\n\nJob Characteristic (JC)\nJC2\nSaya memiliki otonomi dalam mengambil keputusan.\n\n\nJob Characteristic (JC)\nJC3\nSaya tahu seberapa baik saya melakukan pekerjaan saya.\n\n\nJob Characteristic (JC)\nJC4\nPekerjaan saya memberikan kontribusi berarti bagi organisasi.\n\n\nJob Characteristic (JC)\nJC5\nSaya mendapatkan umpan balik atas hasil pekerjaan saya.\n\n\nJob Characteristic (JC)\nJC6\nSaya merasa pekerjaan saya menantang dan tidak monoton.\n\n\nTurn-over Intention (TI)\nTI1\nSaya sering memikirkan untuk meninggalkan instansi saya.\n\n\nTurn-over Intention (TI)\nTI2\nSaya sedang mencari pekerjaan di tempat lain.\n\n\nTurn-over Intention (TI)\nTI3\nJika memungkinkan, saya ingin berhenti dari pekerjaan ini.\n\n\nTurn-over Intention (TI)\nTI4\nSaya merasa tidak akan bertahan lama di instansi ini.\n\n\nTurn-over Intention (TI)\nTI5\nSaya tidak memiliki komitmen jangka panjang terhadap organisasi.\n\n\nTurn-over Intention (TI)\nTI6\nSaya merasa bekerja di tempat lain akan lebih baik."
+  },
+  {
+    "objectID": "index.html#install-package",
+    "href": "index.html#install-package",
+    "title": "Pembinaan Agen Statistik",
+    "section": "2.1 Install package",
+    "text": "2.1 Install package\nPackage yang akan digunakan dalam tutor kali ini adalah SEMinR, jalankan kode install.packages(\"seminr\") pada console untuk memasangnya pada Rstudio.\n\n# Load package\nlibrary(seminr)"
+  },
+  {
+    "objectID": "index.html#load-data",
+    "href": "index.html#load-data",
+    "title": "Pembinaan Agen Statistik",
+    "section": "2.2 Load data",
+    "text": "2.2 Load data\nPertama kali, load dataset yang akan kita gunakan untuk memodelkan SEM-PLS menggunakan fungsi read.csv( ... ). 📥 Unduh Dataset dataset.csv\n\ndata &lt;- read.csv(\"dataset.csv\", header = TRUE, sep = ',')\ndata &lt;- data[,-1] # menghapus kolom ID\n\nDataset ini terdiri dari 250 observasi dan 30 variabel.\n\nhead(data)\n\n\n  \n\n\n\n\n\n\n\n\n\nDISCLAIMER - Data ini merupakan Data Dummy yang di-generate menggunakan bantuan ChatGPT dan hanya bertujuan untuk kepentingan tutorial."
+  },
+  {
+    "objectID": "index.html#mendefinisikan-konstruk",
+    "href": "index.html#mendefinisikan-konstruk",
+    "title": "Pembinaan Agen Statistik",
+    "section": "3.1 Mendefinisikan konstruk",
+    "text": "3.1 Mendefinisikan konstruk\n\n# Definisikan konstruk (measurement model)\nmm &lt;- constructs(\n  composite(\"WLB\",  multi_items(\"WLB\", 1:6)),\n  composite(\"EE\",   multi_items(\"EE\", 1:6)),\n  composite(\"COMP\", multi_items(\"COMP\", 1:6)),\n  composite(\"JC\",   multi_items(\"JC\", 1:6)),\n  composite(\"TI\",   multi_items(\"TI\", 1:6))\n)\n\n\n# Definisikan hubungan antar konstruk (structural model)\nsm &lt;- relationships(\n  paths(from = c(\"WLB\", \"EE\", \"COMP\", \"JC\"), to = \"TI\")\n)"
+  },
+  {
+    "objectID": "index.html#estimasi-model",
+    "href": "index.html#estimasi-model",
+    "title": "Pembinaan Agen Statistik",
+    "section": "3.2 Estimasi model",
+    "text": "3.2 Estimasi model\n\n# Estimasi model dengan metode Partial Least Square (PLS)\npls_model &lt;- estimate_pls(data = data, \n                          measurement_model = mm, \n                          structural_model = sm,\n                          inner_weights = path_weighting)\n\nGenerating the seminr model\n\n\nAll 250 observations are valid.\n\n\n\np &lt;- plot(pls_model)\np\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 1: Grafik hasil pemodelan"
+  },
+  {
+    "objectID": "index.html#hasil-estimasi",
+    "href": "index.html#hasil-estimasi",
+    "title": "Pembinaan Agen Statistik",
+    "section": "3.3 Hasil estimasi",
+    "text": "3.3 Hasil estimasi\n\nsummary_pls_model &lt;- summary(pls_model)\n\n\n# Koefisien jalur dan signifikansi\nsummary_pls_model$paths\n\n           TI\nR^2     0.166\nAdjR^2  0.153\nWLB     0.223\nEE      0.246\nCOMP   -0.045\nJC      0.205\n\n\n\n# Reliabilitas\nsummary_pls_model$reliability\n\n      alpha  rhoC   AVE   rhoA\nWLB  -0.099 0.145 0.189  0.186\nEE   -0.238 0.145 0.197  0.203\nCOMP  0.147 0.357 0.185  0.135\nJC   -0.010 0.053 0.152 -0.160\nTI   -0.056 0.070 0.181  0.126\n\nAlpha, rhoC, and rhoA should exceed 0.7 while AVE should exceed 0.5\n\n\n\n# Validitas\n#summary_pls_model$validity"
+  },
+  {
+    "objectID": "index.html#evaluasi-model",
+    "href": "index.html#evaluasi-model",
+    "title": "Pembinaan Agen Statistik",
+    "section": "3.4 Evaluasi model",
+    "text": "3.4 Evaluasi model\n\nboot_pls_model &lt;- bootstrap_model(seminr_model = pls_model,\n  nboot = 1000,\n  cores = NULL,\n  seed = 123)\n\nBootstrapping model using seminr...\n\n\nSEMinR Model successfully bootstrapped\n\n\n\nsum_boot_pls_model &lt;- summary(boot_pls_model)"
+  },
+  {
+    "objectID": "index.html#mendefinisikan-konstruk-1",
+    "href": "index.html#mendefinisikan-konstruk-1",
+    "title": "Pembinaan Agen Statistik",
+    "section": "4.1 Mendefinisikan konstruk",
+    "text": "4.1 Mendefinisikan konstruk\n\n# Definisikan konstruk (measurement model)\nmm2 &lt;- constructs(\n  composite(\"WLB\",  multi_items(\"WLB\", 1:6)),\n  composite(\"EE\",   multi_items(\"EE\", 1:6)),\n  composite(\"COMP\", multi_items(\"COMP\", 1:6)),\n  composite(\"JC\",   multi_items(\"JC\", 1:6)),\n  composite(\"TI\",   multi_items(\"TI\", 1:6)),\n  interaction_term(iv = \"WLB\", moderator = \"JC\", method = two_stage),\n  interaction_term(iv = \"EE\",  moderator = \"JC\", method = two_stage),\n  interaction_term(iv = \"COMP\", moderator = \"JC\", method = two_stage)\n)\n\n\n# Definisikan hubungan antar konstruk (structural model) dengan variabel moderasi\nsm2 &lt;- relationships(\n  paths(from = c(\"WLB\", \"EE\", \"COMP\", \"JC\"), to = \"TI\"),  \n  paths(from = c(\"WLB*JC\", \"EE*JC\", \"COMP*JC\"), to = \"TI\")\n)"
+  },
+  {
+    "objectID": "index.html#estimasi-model-interaksi",
+    "href": "index.html#estimasi-model-interaksi",
+    "title": "Pembinaan Agen Statistik",
+    "section": "4.2 Estimasi model interaksi",
+    "text": "4.2 Estimasi model interaksi\n\n# Estimasi model dengan metode Partial Least Square (PLS)\npls_model2 &lt;- estimate_pls(data = data, \n                          measurement_model = mm2, \n                          structural_model = sm2,\n                          inner_weights = path_weighting)\n\nGenerating the seminr model\n\n\nAll 250 observations are valid.\n\n# Plot diagramnya\nplot(pls_model2, \"Hasil Pemodelan\")\n\n\n\n\n\n\nsummary_pls_model2 &lt;- summary(pls_model2)"
+  },
+  {
+    "objectID": "index.html#hasil-estimasi-1",
+    "href": "index.html#hasil-estimasi-1",
+    "title": "Pembinaan Agen Statistik",
+    "section": "4.3 Hasil estimasi",
+    "text": "4.3 Hasil estimasi\n\n# Koefisien jalur dan signifikansi\nsummary_pls_model2$paths\n\n            TI\nR^2      0.193\nAdjR^2   0.170\nWLB      0.224\nEE       0.229\nCOMP    -0.074\nJC       0.194\nWLB*JC  -0.082\nEE*JC    0.160\nCOMP*JC -0.017\n\n\n\n# Reliabilitas \nsummary_pls_model2$reliability\n\n         alpha  rhoC   AVE   rhoA\nWLB     -0.099 0.140 0.188  0.197\nEE      -0.238 0.171 0.196  0.192\nCOMP     0.147 0.395 0.181  0.081\nJC      -0.010 0.027 0.152 -0.145\nWLB*JC   1.000 1.000 1.000  1.000\nEE*JC    1.000 1.000 1.000  1.000\nCOMP*JC  1.000 1.000 1.000  1.000\nTI      -0.056 0.176 0.182  0.121\n\nAlpha, rhoC, and rhoA should exceed 0.7 while AVE should exceed 0.5"
+  },
+  {
+    "objectID": "index.html#evaluasi-model-1",
+    "href": "index.html#evaluasi-model-1",
+    "title": "Pembinaan Agen Statistik",
+    "section": "4.4 Evaluasi model",
+    "text": "4.4 Evaluasi model"
+  }
+]
