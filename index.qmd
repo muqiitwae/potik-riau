@@ -14,15 +14,15 @@ format:
 
 # Pendahuluan
 
-Topik yang kita angkat pada tutor kali ini adalah Pengaruh *Work Life Balance*, *Employee Engagement*, *Competency*, dan *Job Characteristic* terhadap *Turnover Intention* pada Karyawan Generasi Milenial Perusahaan XYZ. Rincian variabel konstruk dapat dilihat pada tabel berikut.
+Topik yang kita angkat pada tutor kali ini adalah Pengaruh *Work Life Balance*, *Employee Engagement*, *Competency*, dan *Job Characteristic* terhadap *Turnover Intention* pada Karyawan Generasi Milenial Perusahaan XYZ. Rincian variabel konstruk dapat dilihat pada @tbl-konstruk berikut.
 
 ```{r}
 #| include: false
 library(knitr)
 ```
 
-```{r tab-konstruk}
-#| label: tab-konstruk
+```{r}
+#| label: tbl-konstruk
 #| echo: false
 #| tbl-cap: "Rincian variabel konstruk dan item pertanyaan."
 
@@ -31,9 +31,7 @@ kable(konstruk_var, align = "l")
 
 ```
 
-# Pengenalan Package SEMinR
-
-## Install package
+## Install dan load package
 
 Package yang akan digunakan dalam tutor kali ini adalah SEMinR, jalankan kode `install.packages("seminr")` pada console untuk memasangnya pada Rstudio.
 
@@ -46,7 +44,7 @@ Package yang akan digunakan dalam tutor kali ini adalah SEMinR, jalankan kode `i
 library(seminr)
 ```
 
-## Load data
+## Load dan menampilkan data
 
 Pertama kali, load dataset yang akan kita gunakan untuk memodelkan SEM-PLS menggunakan fungsi `read.csv( ... )`. [📥 Unduh Dataset dataset.csv](dataset.csv)
 
@@ -66,9 +64,19 @@ head(data)
 ## DISCLAIMER - Data ini merupakan Data Dummy yang di-generate menggunakan bantuan ChatGPT dan hanya bertujuan untuk kepentingan tutorial.
 :::
 
-# Membangun model struktural
+# Pembangunan model
 
-## Mendefinisikan konstruk
+## Membuat model measurement
+
+Fungsi `contructs()` digunakan untuk mendefinisikan semua konstruk ke dalam model measurement. Konstruk yang dapat dibuat antara lain:
+
+-   `composite()` : untuk konstruk individu
+
+-   `interaction_term()` : untuk konstruk yang saling berinteraksi
+
+Lalu, untuk `composite()` yang terdiri dari beberapa variabel menggunakan `multi_items()`, sedangkan untuk yang hanya terdiri dari 1 variabel menggunakan `single_item()`.
+
+Sebagai contoh, untuk konstruk WLB disusun atas variabel WLB1 sampai WLB6. Maka, model measurement-nya dapat didefinisikan sebagai berikut.
 
 ```{r}
 # Definisikan konstruk (measurement model)
@@ -80,6 +88,8 @@ mm <- constructs(
   composite("TI",   multi_items("TI", 1:6))
 )
 ```
+
+## Membuat model struktural
 
 ```{r}
 # Definisikan hubungan antar konstruk (structural model)
@@ -109,20 +119,18 @@ pls_model <- estimate_pls(data = data,
 plot(pls_model)
 ```
 
-## Hasil estimasi
+## Interpretasi hasil estimasi
+
+Setelah model diestimasi, hasil ringkasannya dapat di-generate dengan menjalankan fungsi `summary()` lalu kita simpan hasil estimasi model ke dalam `summary_model`.
 
 ```{r}
 summary_pls_model <- summary(pls_model)
 ```
 
-```{r}
-# Koefisien jalur dan signifikansi
-summary_pls_model$paths
-```
+Menampilkan koefisien jalur dan nilai Adjusted R^2^ dengan menjalankan kode berikut.
 
 ```{r}
-# Reliabilitas
-summary_pls_model$reliability
+summary_pls_model$paths
 ```
 
 ```{r}
@@ -130,7 +138,55 @@ summary_pls_model$reliability
 #summary_pls_model$validity
 ```
 
-## Evaluasi model
+# Evaluasi model
+
+## Evaluasi model measurement
+
+### Indicator reliability
+
+```{r}
+summary_pls_model$loadings
+```
+
+Reliabilitas indikator dapat diperoleh dari kuadrat nilai loadings.
+
+```{r}
+summary_pls_model$loadings^2
+```
+
+### Internal consistency reliability
+
+Cronbach’s alpha \< rhoA \< rhoC
+
+```{r}
+summary_pls_model$reliability
+```
+
+### Convergent validity
+
+Nilai AVE minimal 0.5
+
+```{r}
+summary_pls_model$reliability
+```
+
+### Discriminant validity
+
+Untuk memastikan bahwa setiap konstruk dari variabel laten berbeda dengan variabel lainnya. Hal ini ditandai dengan nilai loadings pada dari setiap indikator dari suatu variabel laten memiliki nilai yang paling besar dibandingkan nilai loadings lain pada variabel laten lainnya. Hasilnya adalah sebagai berikut.
+
+```{r}
+summary_pls_model$validity$cross_loadings
+```
+
+Atau lebih mudahnya dapat melihat nilai kriteria Fornell-Larcker (Fornel & Larcker, 1981) berikut.
+
+```{r}
+summary_pls_model$validity$fl_criteria
+```
+
+## Evaluasi model struktural
+
+### Pengujian hipotesis (bootstrap)
 
 ```{r}
 boot_pls_model <- bootstrap_model(seminr_model = pls_model,
@@ -143,58 +199,10 @@ boot_pls_model <- bootstrap_model(seminr_model = pls_model,
 sum_boot_pls_model <- summary(boot_pls_model)
 ```
 
-# Membangun model dengan variabel moderasi
-
-## Mendefinisikan konstruk
-
 ```{r}
-# Definisikan konstruk (measurement model)
-mm2 <- constructs(
-  composite("WLB",  multi_items("WLB", 1:6)),
-  composite("EE",   multi_items("EE", 1:6)),
-  composite("COMP", multi_items("COMP", 1:6)),
-  composite("JC",   multi_items("JC", 1:6)),
-  composite("TI",   multi_items("TI", 1:6)),
-  interaction_term(iv = "WLB", moderator = "JC", method = two_stage),
-  interaction_term(iv = "EE",  moderator = "JC", method = two_stage),
-  interaction_term(iv = "COMP", moderator = "JC", method = two_stage)
-)
+sum_boot_pls_model$bootstrapped_paths
 ```
 
 ```{r}
-# Definisikan hubungan antar konstruk (structural model) dengan variabel moderasi
-sm2 <- relationships(
-  paths(from = c("WLB", "EE", "COMP", "JC"), to = "TI"),  
-  paths(from = c("WLB*JC", "EE*JC", "COMP*JC"), to = "TI")
-)
+sum_boot_pls_model$bootstrapped_loadings
 ```
-
-## Estimasi model interaksi
-
-```{r}
-# Estimasi model dengan metode Partial Least Square (PLS)
-pls_model2 <- estimate_pls(data = data, 
-                          measurement_model = mm2, 
-                          structural_model = sm2,
-                          inner_weights = path_weighting)
-# Plot diagramnya
-plot(pls_model2, "Hasil Pemodelan")
-```
-
-```{r}
-summary_pls_model2 <- summary(pls_model2)
-```
-
-## Hasil estimasi
-
-```{r}
-# Koefisien jalur dan signifikansi
-summary_pls_model2$paths
-```
-
-```{r}
-# Reliabilitas 
-summary_pls_model2$reliability
-```
-
-## Evaluasi model
